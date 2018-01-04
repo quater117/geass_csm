@@ -1,0 +1,60 @@
+This project is licensed under the terms of the MIT license.
+
+Version: 0.9
+
+Warning: this is a work in progress, there might be some changes in future
+	 release
+
+The goal is to allow the player to use the minetest lua API and write lua script
+The goal isn't to introduce a new API to the game
+
+Available commands:
+	.lua		run instruction
+	.luaclear	clear the environment
+	.luac		open the editor
+
+Available subcommands for .luac:
+	cat
+	edit
+	exec
+	halt
+	help
+	history
+	load
+	save
+	title
+	unregister
+
+Special variables and functions:
+	mod_storage		access the mod storage
+	localplayer		access the 'player'
+	_halt()			halt the running program
+	_running_script		access the table which determines if a script is
+				running
+	require()		even tough this function makes part of the lua
+				programming language, it is redefined
+
+Example:
+--------
+
+.lua core.display_chat_message('hello world !')
+
+
+Inspired by LuaCmd, basic_robot_csm
+
+
+Installation:
+-------------
+
+1. unpack in "minetest DIR"/clientmods/
+2. enable client mods in advanced settings menu or in minetest.conf
+3. inside /clientmods/mods.conf there should be line:
+	load_mod_basic_robot_csm = true
+4. while playing say .bot
+5. you can see commands in init.lua or for more available commands at:
+	https://github.com/minetest/minetest/blob/master/doc/client_lua_api.md
+
+Report bugs or request help on the forum topic.
+
+For further information or help see:
+http://wiki.minetest.com/wiki/Installing_Mods

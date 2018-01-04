@@ -1,0 +1,1 @@
+Allow the player to execute scripts in game

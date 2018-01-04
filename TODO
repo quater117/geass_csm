@@ -1,0 +1,6 @@
+Rename some variables
+Improve the code of 'require'
+Remove all 'error()'
+Improve the documentation
+Refactor / Organize / Simplify the code
+Improve subcommands (e.g. history, ...)
