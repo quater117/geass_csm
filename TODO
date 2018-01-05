@@ -4,3 +4,4 @@ Remove all 'error()'
 Improve the documentation
 Refactor / Organize / Simplify the code
 Improve subcommands (e.g. history, ...)
+Give access to parameters of the mod

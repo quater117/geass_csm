@@ -1,6 +1,6 @@
 This project is licensed under the terms of the MIT license.
 
-Version: 0.9
+Version: 0.9.01
 
 Warning: this is a work in progress, there might be some changes in future
 	 release
@@ -26,13 +26,16 @@ Available subcommands for .luac:
 	unregister
 
 Special variables and functions:
-	mod_storage		access the mod storage
-	localplayer		access the 'player'
 	_halt()			halt the running program
 	_running_script		access the table which determines if a script is
 				running
 	require()		even tough this function makes part of the lua
 				programming language, it is redefined
+
+Specials contents in mod_storage:
+	on_connect
+	titles
+
 
 Example:
 --------
@@ -49,8 +52,8 @@ Installation:
 1. unpack in "minetest DIR"/clientmods/
 2. enable client mods in advanced settings menu or in minetest.conf
 3. inside /clientmods/mods.conf there should be line:
-	load_mod_basic_robot_csm = true
-4. while playing say .bot
+	load_mod_geass_csm = true
+4. while playing say .luac
 5. you can see commands in init.lua or for more available commands at:
 	https://github.com/minetest/minetest/blob/master/doc/client_lua_api.md
 

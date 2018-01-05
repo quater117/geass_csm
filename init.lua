@@ -36,13 +36,14 @@ env_settings = function(env, title)
     end
     setfenv(code, env)
     local status, result = pcall(code)
+    running_script[title] = true
     if not status then
       error(result)
     end
     if result == nil then
       result = true
     end
-    env._LOADED[title] = result
+    env._LOADED[to_load] = result
     return result
   end
   if not enable_callback_table_management then
@@ -71,8 +72,9 @@ create_env = function()
     env[k] = v
   end
   env._G = env
-  env.mod_storage = mod_storage
-  env.localplayer = localplayer
+  env.core.get_mod_storage = function()
+    return mod_storage
+  end
   env._running_script = running_script
   env._halt = function() end
   env._LOADED = {}
@@ -142,10 +144,10 @@ end
 
 core.register_on_connect(
 function()
-  running_script['on_join'] = true
-  local lua_code = mod_storage:get_string('on_join') or ''
+  running_script['on_connect'] = true
+  local lua_code = mod_storage:get_string('on_connect') or ''
   if lua_code ~= '' then
-    save_title('on_join')
+    save_title('on_connect')
   end
   localplayer = core.localplayer
 end)
@@ -212,9 +214,9 @@ function(form_name, fields)
       '-- commands:\n' ..
       '--   edit <title0>\n' ..
       '--       to edit the script titled <title0>\n' ..
-      '--   run\n' ..
+      '--   exec\n' ..
       '--       to run the current script\n' ..
-      '--   run <title0> <title1> ... <titleN>\n' ..
+      '--   exec <title0> <title1> ... <titleN>\n' ..
       '--       to run the script titled <title0>, <title1>, ..., <titleN>\n' ..
       '--   halt\n' ..
       '--       to stop the current script\n' ..
@@ -229,8 +231,9 @@ function(form_name, fields)
       '--       to display the title of current script\n' ..
       '--   copy <title0>\n' ..
       '--       to duplicate the current script with title <title0>\n' ..
-      '--   remove <title0>\n' ..
-      '--       to duplicate the current script with title <title0>\n' ..
+      '--   remove <title0> <title1> ... <titleN>\n' ..
+      '--       to remove scripts with title <title0> <title1> ... <titleN>\n'
+      ..
       '--   unregister <title0> <title1> ... <titleN>\n' ..
       '--       if it is enabled then it remove every registered callback by\n'
       ..
@@ -304,7 +307,7 @@ core.register_chatcommand('luac', {
       name = title
       core.display_chat_message(core.colorize('yellow', 'Code loaded'))
       return
-    elseif tokens[1] == 'save' then
+    elseif tokens[1] == 'copy' then
       local title = tokens[2] or name
       local code = mod_storage:get_string(name) or ''
       mod_storage:set_string(title, code)
@@ -315,21 +318,24 @@ core.register_chatcommand('luac', {
       core.display_chat_message(core.colorize('yellow', 'Title: ') .. name)
       return
     elseif tokens[1] == 'remove' then
-      local title = tokens[2] or ''
-      if title == '' then
-        core.display_chat_message(core.colorize('red', 'Error: ')
-         ..'title can\'t be empty')
-      end
-      local titles = mod_storage:get_string('titles')
-      local new_titles = 'titles'
-      --titles = titles:gsub(title, ''); titles = titles:gsub('%s%s', ' ')
-      for t in titles:gmatch('[^%s]+') do
-        if t ~= title then
-          new_titles = new_titles .. ' ' .. t
+      for i = 2, #tokens do
+        local title = tokens[i] or ''
+        if title == '' then
+          core.display_chat_message(core.colorize('red', 'Error: ')
+           ..'title can\'t be empty')
         end
+        local titles = mod_storage:get_string('titles')
+        titles = titles:gsub('titles', '')
+        local new_titles = 'titles'
+        --titles = titles:gsub(title, ''); titles = titles:gsub('%s%s', ' ')
+        for t in titles:gmatch('[^%s]+') do
+          if t ~= title then
+            new_titles = new_titles .. ' ' .. t
+          end
+        end
+        mod_storage:set_string('titles', new_titles)
+        mod_storage:set_string(title, nil)
       end
-      mod_storage:set_string('titles', new_titles)
-      mod_storage:set_string(title, nil)
       core.display_chat_message(core.colorize('yellow', 'Code removed'))
       return
     elseif tokens[1] == 'exec' then
@@ -354,7 +360,7 @@ core.register_chatcommand('luac', {
         environment_list[name] = env
         local code = mod_storage:get_string(name) or ''
         env_settings(env, name)
-        run(code, env)
+        local result, errors = run(code, env)
         if errors then
           core.display_chat_message(core.colorize('red', 'Error from: ')
             .. name)
@@ -433,5 +439,5 @@ core.register_chatcommand('luaclear', {
   end
 })
 
-core.display_chat_message('[CSM] loaded lua')
+core.display_chat_message('[CSM] loaded Geass')
 
