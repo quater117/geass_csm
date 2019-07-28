@@ -5,7 +5,7 @@ Licenced under the MIT licence. See LICENCE for more information.
 =================================================================
 --]]
 
-local localplayer
+--local localplayer
 local mod_storage = core.get_mod_storage()
 local timestep = 1
 local timer = 0
@@ -75,6 +75,7 @@ create_env = function()
   env.core.get_mod_storage = function()
     return mod_storage
   end
+  env.core.get_key_pressed = core.get_key_pressed
   env._running_script = running_script
   env._halt = function() end
   env._LOADED = {}
@@ -142,15 +143,19 @@ local save_title = function(title)
   end
 end
 
+running_script['on_connect'] = true
+--[[
 core.register_on_connect(
 function()
+  --core.display_chat_message('[CSM] loaded Geass')
   running_script['on_connect'] = true
   local lua_code = mod_storage:get_string('on_connect') or ''
   if lua_code ~= '' then
     save_title('on_connect')
   end
-  localplayer = core.localplayer
+  --localplayer = core.localplayer
 end)
+-- ]]
 
 core.register_globalstep(
 function(dtime)
